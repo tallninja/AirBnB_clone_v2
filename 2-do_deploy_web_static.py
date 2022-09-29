@@ -1,75 +1,49 @@
 #!/usr/bin/python3
-"""a script to pack static content into a tarball
-"""
-from fabric.api import run, put, sudo
-from fabric.operations import put
+from fabric.api import *
+from os.path import exists
 from datetime import datetime
-import os
+import os.path
 
+env.hosts = ['54.210.85.213', '54.91.141.251']
+env.user = 'ubuntu'
+env.key = "/root/.ssh/school"
 
-env.hosts = ['3.239.117.62', '3.231.210.238']
 
 def do_pack():
-    """packages all contents from web_static into .tgz archive"""
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    local('mkdir -p versions')
-    res = local('tar -cvf versions/web_static_{}.tgz web_static'
-                   .format(now))
-    if res.failed:
+    """
+    Funtion that compress a folder
+    """
+    try:
+        local('mkdir -p versions')
+        date = datetime.now()
+        format = "%Y%m%d%H%M%S"
+        path = 'versions/web_static_{}.tgz'.format(date.strftime(format))
+        local('tar -cvzf {} web_static'.format(path))
+        return path
+    except Exception as error:
         return None
-    else:
-        return res
 
 
 def do_deploy(archive_path):
-    """deploys a static archive to web servers"""
-    if not os.path.isfile(archive_path):
-        print('archive file does not exist...')
+    """Deployment process (distributing an archive to the web server"""
+
+    if not exists(archive_path):
         return False
+
     try:
-        archive = archive_path.split('/')[1]
-        no_ext_archive = archive.split('.')[0]
-    except:
-        print('failed to get archive name from split...')
-        return False
-    uploaded = put(archive_path, '/tmp/')
-    if uploaded.failed:
-        return False
-    res = sudo('mkdir -p /data/web_static/releases/{}/'.format(no_ext_archive))
-    if res.failed:
-        print('failed to create archive directory for relase...')
-        return False
-    res = sudo('tar -C /data/web_static/releases/{} -xzf /tmp/{}'.format(
-               no_ext_archive, archive))
-    if res.failed:
-        print('failed to untar archive...')
-        return False
-    res = sudo('rm /tmp/{}'.format(archive))
-    if res.failed:
-        print('failed to remove archive...')
-        return False
-    res = sudo('mv /data/web_static/releases/{}/web_static/* \
-               /data/web_static/releases/{}'
-              .format(no_ext_archive, no_ext_archive))
-    if res.failed:
-        print('failed to move extraction to proper directory...')
-        return False
-    res = sudo('rm -rf /data/web_static/releases/{}/web_static'
-              .format(no_ext_archive))
-    if res.failed:
-        print('failed to remove first copy of extraction after move...')
-        return False
-    # clean up old release and remove it
-    res = sudo('rm -rf /data/web_static/current')
-    if res.failed:
-        print('failed to clean up old release...')
-        return False
-    res = sudo('ln -sfn /data/web_static/releases/{} /data/web_static/current'
-              .format(no_ext_archive))
-    if res.failed:
-        print('failed to create link to new release...')
-        return False
+        file_formatted = archive_path.split(".")[0].split("/")[1]
+        folder = "/data/web_static/releases/"
+        final_path = "{}{}".format(folder, file_formatted)
 
-    print('\nNew Version Successfuly Deployed!\n')
+        put(archive_path, "/tmp/{}.tgz".format(file_formatted))
+        run("mkdir -p {}/".format(final_path))
+        run("tar -xzf /tmp/{}.tgz -C {}/".format(file_formatted, final_path))
+        run("rm /tmp/{}.tgz".format(file_formatted))
+        run("mv {}/web_static/* {}".format(final_path, final_path))
+        run("rm -rf {}/web_static".format(final_path))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {} /data/web_static/current".format(final_path))
+        return True
 
-    return True
+    except Exception:
+        return False
