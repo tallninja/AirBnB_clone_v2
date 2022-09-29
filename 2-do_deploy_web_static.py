@@ -4,9 +4,9 @@ from os.path import exists
 from datetime import datetime
 import os.path
 
-env.hosts = ['54.210.85.213', '54.91.141.251']
+env.hosts = ['3.239.117.62', '3.231.210.238']
 env.user = 'ubuntu'
-env.key = "/root/.ssh/school"
+env.key = "~/.ssh/school"
 
 
 def do_pack():
