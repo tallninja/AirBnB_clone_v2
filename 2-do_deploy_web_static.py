@@ -17,11 +17,11 @@ def do_pack():
     now = datetime.now().strftime("%Y%m%d%H%M%S")
     local('mkdir -p versions')
     res = local('tar -cvf versions/web_static_{}.tgz web_static'
-                   .format(now))
+                .format(now))
     if res.failed:
         return None
     else:
-        return 
+        return
 
 
 def do_deploy(archive_path):
@@ -33,7 +33,7 @@ def do_deploy(archive_path):
     try:
         archive = archive_path.split('/')[1]
         no_ext_archive = archive.split('.')[0]
-    except:
+    except Exception as e:
         print('failed to get archive name from split...')
         return False
     uploaded = put(archive_path, '/tmp/')
