@@ -5,6 +5,7 @@ the web_static folder of your AirBnB Clone repo"""
 from fabric.api import local
 from datetime import datetime
 
+
 def do_pack():
     """packages all contents from web_static into .tgz archive"""
     now = datetime.now().strftime("%Y%m%d%H%M%S")
