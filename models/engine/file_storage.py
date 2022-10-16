@@ -10,14 +10,13 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return FileStorage.__objects
-        else:
+        if cls:
             new_dict = {}
-            for key in FileStorage.__objects:
-                if FileStorage.__objects[key].__class__ == cls:
-                    new_dict[key] = FileStorage.__objects[key]
+            for key, value in self.__objects.items():
+                if cls.__name__ == value.__class__.__name__:
+                    new_dict[key] = value
             return new_dict
+        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -30,7 +29,17 @@ class FileStorage:
             temp.update(FileStorage.__objects)
             for key, val in temp.items():
                 temp[key] = val.to_dict()
-            json.dump(temp, f, indent=2)
+            json.dump(temp, f)
+
+    def delete(self, obj=None):
+        """
+        Public instance method to delete
+        to delete obj from __objects if it’s inside
+        - if obj is equal to None
+        """
+        if obj:
+            del self.__objects[obj.__class__.__name__ + '.' + obj.id]
+            self.save()
 
     def reload(self):
         """Loads storage dictionary from file"""
@@ -56,12 +65,7 @@ class FileStorage:
         except FileNotFoundError:
             pass
 
-    def delete(self, obj=None):
-        """function that deletes an object"""
-        if obj:
-            del (FileStorage.__objects["{}.{}".format(obj.__class__.__name__,
-                 obj.id)])
-
     def close(self):
-        """call reload() method for deserializing the JSON file to objec"""
-        return self.reload()
+        """Add a public method def close(self):
+        """
+        self.reload()

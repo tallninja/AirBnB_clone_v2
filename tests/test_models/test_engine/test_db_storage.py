@@ -1,41 +1,26 @@
 #!/usr/bin/python3
-"""
-Unit tests for tha database storage.
-"""
+""" Testing the console module """
+
 import unittest
-import pycodestyle
+from models.engine import db_storage
 from models.engine.db_storage import DBStorage
 
 
-class test_db_storage(unittest.TestCase):
-    """class to test the db_storage method"""
+class TestConsole(unittest.TestCase):
+    """ Testing the DBStorage class """
 
-    def test_doc(self):
-        """
-        Check all the doc of the Amenity Class
-        """
-        # module documentation
-        module = len(DBStorage.__doc__)
-        self.assertGreater(module, 0)
+    def test_documentation(self):
+        """ Testing module docstrings documentation"""
 
-        # class documentation
-        module_class = len(DBStorage.__doc__)
-        self.assertGreater(module_class, 0)
+        self.assertTrue(db_storage.__doc__)
+        self.assertTrue(db_storage.DBStorage.__doc__)
 
-        module_class = len(DBStorage.new.__doc__)
-        self.assertGreater(module_class, 0)
+    def test_methods_doc(self):
+        """ Testing all docstrings documentation of each DBStorage method"""
 
-        module_class = len(DBStorage.save.__doc__)
-        self.assertGreater(module_class, 0)
+        for all_methods in dir(DBStorage):
+            self.assertTrue(all_methods.__doc__)
 
-        module_class = len(DBStorage.delete.__doc__)
-        self.assertGreater(module_class, 0)
 
-        module_class = len(DBStorage.reload.__doc__)
-        self.assertGreater(module_class, 0)
-
-        module_class = len(DBStorage.all.__doc__)
-        self.assertGreater(module_class, 0)
-
-        module_class = len(DBStorage.__init__.__doc__)
-        self.assertGreater(module_class, 0)
+if __name__ == '__main__':
+    unittest.main()
