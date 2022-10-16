@@ -17,7 +17,7 @@ def hbnb():
     return "HBNB"
 
 
-@app.route('/c/<str:text>', strict_slashes=False)
+@app.route('/c/<string:text>', strict_slashes=False)
 def url_param(text):
     """url param"""
     text = text.replace('_', ' ')
