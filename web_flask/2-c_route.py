@@ -21,7 +21,7 @@ def hbnb():
 def url_param(text):
     """url param"""
     text = text.replace('_', ' ')
-    return f"C {text}"
+    return "C {}".format(text)
 
 
 if __name__ == '__main__':
