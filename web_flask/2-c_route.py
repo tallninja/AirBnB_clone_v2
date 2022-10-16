@@ -17,10 +17,11 @@ def hbnb():
     return "HBNB"
 
 
-@app.route('/c/<text>', strict_slashes=False)
+@app.route('/c/<str:text>', strict_slashes=False)
 def url_param(text):
     """url param"""
-    return f"C {text.replace('_', ' ')}"
+    text = text.replace('_', ' ')
+    return f"C {text}"
 
 
 if __name__ == '__main__':
